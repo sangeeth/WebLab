@@ -1,0 +1,32 @@
+<html>
+	<head>
+	<script src="http://code.jquery.com/jquery-1.7.min.js"></script>
+	<script src="../../src/jquery.slideshow.js"></script>
+	<style>
+	#slides > div {
+		display: none;
+	}
+	</style>
+	
+	<script>
+		$(window).load(function() {
+			$("#slides").playAsSlideshow();
+		});
+	</script>
+	
+	</head>
+	
+	<body>
+		<div id="slides">
+			<div>
+				<img src="images/jay-1.png"></img>
+			</div>
+			<div>
+				<img src="images/jay-2.png"></img>
+			</div>
+			<div>
+				<img src="images/jay-3.png"></img>
+			</div>
+		</div>
+	</body>
+</html>
