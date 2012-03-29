@@ -12,8 +12,6 @@ function ECGMonitor(canvasId) {
 	// where 1 mm = 3pixels
 	this.pixelsPer100ms = 16;  
 	this.lowerLimit = 105;
-	this.speed = 10;
-	this.pixelsPerUnit = 5;
 	this.dataIndex = 0;
 	this.i = 0;
 	this.startX = 30;
