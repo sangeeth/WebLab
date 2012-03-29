@@ -8,47 +8,24 @@
 
 <script type="text/javascript">
 var app = {
-		   ecgMonitor : null, 		
-		   url: null,
-		   initialize: function() {
-		      app.listen();
-		   },
-		   listen: function() {
-		      $('#comet-frame').attr('src',  app.url);
-		      console.log("Listening now at ", app.url);
-		   },
-		   start: function() {
-
-			   $.ajax({
-				   type: "POST",
-				   url: "ecgfeed",
-				   data: "action=start"
-				 }).done(function( msg ) {
-				   alert( "Response: " + msg );
-				 });
-		   },
-		   stop: function() {
-			   $.ajax({
-				   type: "POST",
-				   url: "ecgfeed",
-				   data: "action=stop"
-				 }).done(function( msg ) {
-				   alert( "Response: " + msg );
-				 });
-		   },
-		   update: function(data) {
-			   console.log(data);
-			   this.ecgMonitor.enque(data.list); 
-		   }
+	   ecgMonitor : null,
+	   feedUrl: 'ecgfeed',
+	   listen: function() {
+	      $('#comet-frame').attr('src',  this.feedUrl);
+	      console.log("Listening now at ", this.feedUrl);
+	   },
+	   update: function(data) {
+		   console.log(data);
+		   this.ecgMonitor.enque(data.list); 
+	   }
 };
 		
 $(window).load(function () {
-	ecgMonitor = new ECGMonitor("#canvas");
+	ecgMonitor = new ECGMonitor(/*canvasId=*/"#canvas");
 	ecgMonitor.startup();
 	
 	app.ecgMonitor = ecgMonitor;
-	app.url = '/ecg-monitor-jee6/ecgfeed';
-	app.initialize();
+	app.listen();
 });
 </script>
 </head>

@@ -3,17 +3,37 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ECG Monitor Control</title>
-        <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-        <script type="text/javascript" src="js/ecgmonitor.js"></script>
+<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
 
 <script type="text/javascript">
+var ecgMonitorFeed = {
+   start: function() {
+	   $.ajax({
+		   type: "POST",
+		   url: "ecgfeed",
+		   data: "action=start"
+		 }).done(function( msg ) {
+		   alert( "Response: " + msg );
+		 });
+   },
+   stop: function() {
+	   $.ajax({
+		   type: "POST",
+		   url: "ecgfeed",
+		   data: "action=stop"
+		 }).done(function( msg ) {
+		   alert( "Response: " + msg );
+		 });
+   }
+};
+
 $(window).load(function () {
 	$("#start-button").click(function(){
-		app.start();
+		ecgMonitorFeed.start();
 	});
 	
 	$("#stop-button").click(function(){
-		app.stop();
+		ecgMonitorFeed.stop();
 	});	
 });
 </script>

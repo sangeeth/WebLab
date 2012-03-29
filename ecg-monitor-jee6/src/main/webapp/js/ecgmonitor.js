@@ -54,7 +54,7 @@ function ECGMonitor(canvasId) {
 		this.lastX = this.startX;
 		this.lastY = this.startY;
 
-		var canvas = $("#canvas")[0];
+		var canvas = $(canvasId)[0];
 		this.canvasContext = canvas.getContext('2d');
 
 		this.canvasWidth = canvas.width;
