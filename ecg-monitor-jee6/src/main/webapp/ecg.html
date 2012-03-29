@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ECG Waveform</title>
+        <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="js/ecgmonitor.js"></script>
+
+<script type="text/javascript">
+$(window).load(function () {
+	ecgMonitor = new ECGMonitor("#canvas");
+	ecgMonitor.startup();
+	
+	app.ecgMonitor = ecgMonitor;
+	
+	app.initialize();
+	
+	$("#start-button").click(function(){
+		app.start();
+	});
+	
+	$("#stop-button").click(function(){
+		app.stop();
+	});	
+});
+</script>
+</head>
+<body style="background-color: black">
+	<canvas id="canvas" width="600" height="230"></canvas>
+	<iframe id="comet-frame" style="display: none"></iframe>
+</body>
+</html>
