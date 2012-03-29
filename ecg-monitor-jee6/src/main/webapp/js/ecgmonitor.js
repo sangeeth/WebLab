@@ -1,40 +1,3 @@
-var count = 0;
-var app = {
-   ecgMonitor : null, 		
-   url: '/jayweb/ecgfeed',
-   initialize: function() {
-      app.listen();
-   },
-   listen: function() {
-      $('#comet-frame').attr('src',  app.url);
-      count ++;
-      console.log("Listening now at ", app.url);
-   },
-   start: function() {
-
-	   $.ajax({
-		   type: "POST",
-		   url: "ecgfeed",
-		   data: "action=start"
-		 }).done(function( msg ) {
-		   alert( "Response: " + msg );
-		 });
-   },
-   stop: function() {
-	   $.ajax({
-		   type: "POST",
-		   url: "ecgfeed",
-		   data: "action=stop"
-		 }).done(function( msg ) {
-		   alert( "Response: " + msg );
-		 });
-   },
-   update: function(data) {
-	   console.log(data);
-	   this.ecgMonitor.enque(data.list); 
-   }
-};
- 
 function ECGMonitor(canvasId) {
 // public:   
    //this.parentId = parentId;
@@ -171,7 +134,7 @@ function ECGMonitor(canvasId) {
 	   this.canvasContext.beginPath(); {
 		   this.canvasContext.lineWidth = 1;
 		   
-		   count = this.pixelsPer100ms; 
+		   var count = this.pixelsPer100ms; 
 		   while(count>0) {
 			   this.canvasContext.moveTo(this.lastX, this.lastY);
 
