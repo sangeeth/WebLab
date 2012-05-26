@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <style type="text/css">
+            @import url("/js/dojo/resources/dojo.css");
+            @import url("/js/dijit/themes/dijit.css");
+            @import url("/js/dijit/themes/tundra/tundra.css");
+        </style>
+        
+        <script type="text/javascript">
+            var djConfig = { parseOnLoad: true};
+        </script>
+        <script type="text/javascript" src="/js/dojo/dojo.js">
+        </script>
+        <script type="text/javascript">
+            dojo.require("dijit.form.TextBox");
+            dojo.require("dijit.form.Button");
+            
+            function doFetch() {
+                var nameForm = dojo.byId("nameForm");                
+                var xhrArgs = {
+                        form: nameForm,
+                        handleAs: "json",
+                        load: function(person) {
+                            console.log(person);
+                            
+                            console.log("Occupation of " + person.name + " is " + person.occupation);
+                        },
+                        error: function(error, ioargs) {
+                          console.error(error);
+                          
+                          //var httpStatus = ioargs.xhr.status;
+                          //if (httpStatus == 401 || httpStatus == 404) {
+                        }
+                 };
+                 dojo.xhrPost(xhrArgs);
+            }
+        </script>    
+    </head>    
+    <body class="tundra">
+        <form id="nameForm" method="post" action="/xhrPostHandler">
+            <div dojoType="dijit.form.TextBox" name="name" id="nameTextBox" value="Gandhi" label="Name :"></div>
+            <div dojoType="dijit.form.Button" name="Submit" id="submitButton" onclick="javascript:doFetch();">Fetch</div>
+        </form>
+    </body>
+</html>

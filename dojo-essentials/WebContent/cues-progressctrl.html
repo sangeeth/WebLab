@@ -1,0 +1,561 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    
+    <title>CUE Dojo sample: Progress Bar</title>
+    
+    <style type="text/css">
+     @import url("/js/dojo/resources/dojo.css");
+     @import url("/js/dijit/themes/dijit.css");
+     @import url("/js/dijit/themes/tundra/tundra.css");
+    
+     @import url("/js/cues/resources/themes/kubrick/kubrickbase.css");
+     @import url("/js/cues/resources/themes/kubrick/progressIndicator.css");
+     @import url("/js/cues/dialog/dialog_overlay/resources/themes/kubrick/dialog_overlay.css");
+     @import url("/js/cues/form/resources/themes/kubrick/button.css");
+     @import url("/js/cues/form/resources/themes/kubrick/forms.css");
+     @import url("/js/cues/form/resources/themes/kubrick/button.css");
+     @import url("/js/cues/layout/groupbox/resources/themes/kubrick/groupbox.css");        
+    </style>
+         
+    <style type="text/css">
+        /* demo icons used in this sample */
+        .kubrick .dijitProgressBarContainer .progressBarContainerIcon.updateIcon {
+            width: 32px;
+            height: 32px;
+            background-image: url("../../images/Status_error_icon1.png");
+        }
+    </style>
+
+
+    <script type="text/javascript">
+        djConfig = {
+        		parseOnLoad: true,
+                baseUrl: "/js/dojo/",
+                modulePaths:{cues:'/js/cues/'}
+		};
+    </script>
+
+    <script type="text/javascript" src="/js/dojo/dojo.js"></script>
+    <script type="text/javascript" src="/js/cues/cuesdojo.js"></script>
+
+    <script>
+    // contains the two implementation subclasses bar and ball
+    dojo.require("cues.ProgressIndicator");
+
+    dojo.require("dojo.string");
+    dojo.require("cues.dialog.DialogOverlay");
+
+
+    // form boxes
+    dojo.require("cues.form.Form");
+    dojo.require("cues.layout.GroupBox");
+    dojo.require("cues.form.TextBox");
+    dojo.require("dijit.form.Button");
+    </script>
+
+
+    <script>
+
+        function setParameters(){
+            dijit.byId("setTestBar").update({maximum: dojo.byId("maximum").value, progress: dojo.byId("progressValue").value});
+        }
+
+        function keyUpHandler(){
+            dijit.byId("testBar").update({progress:dojo.byId("test").value.length});
+            dijit.byId("testBarInt").update({progress:dojo.byId("test").value.length});
+            dijit.byId("smallTestBar").update({progress:dojo.byId("test").value.length});
+        }
+
+    </script>
+
+
+    <script>
+        // summary : simulates a fake progress bar processing in a dialog window
+        // complete with status label updates
+        // progress value changes
+        // it is cancellable
+    function startProgressBarDemo1( ) {
+        var dialogWidget = dijit.byId('dialog1');
+            dialogWidget.show();
+
+
+
+            // some progress value service ( SIMULATED )
+            var _fakeProgress = 0;
+        function _getProgressReport(){
+            var deferred = new dojo.Deferred();
+             _fakeProgress = Math.min( _fakeProgress + (Math.random() * 5), 100);
+            deferred.callback( _fakeProgress );
+            return deferred;
+        }
+
+
+            // callback to update the progress bar model / view
+            var _progressUpdater = function (bar) {
+                    var updateRemoteProgressBarDelay = 150;
+
+            var _timer = setInterval(function(){
+
+                var report = _getProgressReport();
+
+                report.addCallback(function(response) {
+
+                    var responsePercentString = [ response, "%" ].join("");
+
+                    // update view if not yet done...
+                    if(response >= 0 && response <= 100 ){
+                        bar.update( { progress: responsePercentString } );
+                    }
+
+                    if(response >= 100 ){
+                        clearInterval(_timer);
+                        _timer = null;
+                        return;
+                    }
+
+                });
+            }, updateRemoteProgressBarDelay ); // update fairly quickly
+        }
+
+            // bind the updater callback to the progress bar
+            // assume to be the first one
+            var progressBarWidget = dialogWidget.getChildren()[0];
+
+            if( progressBarWidget ) {
+
+                /*
+                progressBarWidget.connect( progressBarWidget, "report", function( val ) {
+                    // update the footer
+                    this.footerNode.innerHTML =     "Task " +  " : " + new Date();
+
+                     var msg = parseInt(val * 100) + " % ";
+                     return msg;
+                 }
+                */
+
+        
+
+
+                // start sim !
+                _progressUpdater( progressBarWidget );
+            }
+
+            //var _progressUpdater = function (bar) {
+    }
+
+
+
+
+
+            // summary : simulates a fake indeterminate progress bar processing in a dialog window
+    function startProgressBarDemo2( ) {
+        var dialogWidget = dijit.byId('dialog2');
+            dialogWidget.show();
+
+
+            // bind the updater callback to the progress bar
+            // assume to be the first one
+            var progressBarWidget = dialogWidget.getChildren()[0];
+
+
+            var threadMetadata = {
+                thread : null,
+                invokeCounter : 0,
+                startDate : new Date().getTime(),
+                endDate : null,
+                // update cycle
+                intervalDuration : 500,
+                // thread should live until n milliseconds
+                executionLifecycleDuration : 3 * 1000
+            };
+
+            // some progress value service ( SIMULATED )
+
+        function _getProgressReport(){
+            var deferred = new dojo.Deferred();
+            deferred.callback( threadMetadata );
+            return deferred;
+        }
+
+        // demo functions
+        function getRandomProgressTitle() {
+            var terms = ["uploading", "saving", "retrieving record " + new Date().getSeconds(), "reindexing server", "emailing boss", "ordering pizza for lunch", "applying new patch", "defragmenting 100GB hard drive", "resetting LAN" ];
+            var q = terms[ parseInt( Math.random() * terms.length ) ];
+            return q;
+        }
+
+
+            // callback to update the progress bar model / view
+            var _progressUpdater = function (bar) {
+
+                threadMetadata.thread = setInterval( function(){
+
+                var report = _getProgressReport();
+
+                report.addCallback(function(response) {
+
+                    progressBarWidget.setTitle ( getRandomProgressTitle() );
+
+                    bar.update( );
+
+                    var timeNow = new Date().getTime();
+                    // did execution last at least n seconds ?
+                    if( ( timeNow - threadMetadata.startDate ) >=  threadMetadata.executionLifecycleDuration  ) {
+                        // example messages constructed after completion
+
+                        // simple countdown
+                        setTimeout( function() { progressBarWidget.setTitle ( "Finished... (closing in <b>3</b> seconds)" );}, 0);
+                        setTimeout( function() { progressBarWidget.setTitle ( "Finished... (closing in <b>2</b> seconds)" );}, 1000);
+                        setTimeout( function() { progressBarWidget.setTitle ( "Finished... (closing in <b>1</b> seconds)" );}, 2000);
+
+                        progressBarWidget.setFooter ( threadMetadata.invokeCounter + " tasks completed" );
+                        dojo.style( progressBarWidget.footerNode, { fontSize: "18px", fontWeight: "bold" } );
+
+                        // destroy thread.. and call complete
+                        clearInterval( threadMetadata.thread );
+                        threadMetadata.endDate = new Date();
+                        threadMetadata.thread = null;
+                        // wait, slightly, then notify for the oncomplete to take over
+                        setTimeout ( function() { progressBarWidget.onComplete() }, 3100 );
+
+                        return;
+                    }
+
+
+                    threadMetadata.invokeCounter++;
+                });
+            },  threadMetadata.intervalDuration ); // update fairly quickly
+
+
+            }
+
+
+            if( progressBarWidget ) {
+                // start sim !
+                _progressUpdater( progressBarWidget );
+            }
+
+    }
+
+
+
+
+    // summary : Progress Ball 1
+    function startAuthenticationDemo1( context ) {
+        var progressBarWidget = dijit.byId( "progressBall1");
+        progressBarWidget.show();
+        // disable button
+        context.attr("disabled", true);
+        context.focusNode.blur();
+        // change sample text for informative purposes only
+        dojo.byId("progressBall1_description").innerHTML = "connecting..";
+
+
+        var threadMetadata = {
+            thread : null,
+            startDate : new Date().getTime(),
+            endDate : null,
+            // update cycle
+            intervalDuration : 500,
+            // thread should live until n milliseconds
+            executionLifecycleDuration : 4 * 1000
+        };
+
+        // some progress value service ( SIMULATED )
+
+        function _getProgressReport(){ var deferred = new dojo.Deferred(); deferred.callback( threadMetadata );    return deferred; }
+
+        // callback to update the progress bar model / view
+        var _progressUpdater = function (bar) {
+
+            threadMetadata.thread = setInterval( function(){
+            var report = _getProgressReport();
+
+            report.addCallback(function(response) {
+
+                bar.update( );
+
+                var timeNow = new Date().getTime();
+
+                // did execution complete ?
+                if( ( timeNow - threadMetadata.startDate ) >=  threadMetadata.executionLifecycleDuration  ) {
+
+                    // change sample text for informative purposes only
+                    dojo.byId("progressBall1_description").innerHTML = "Logged in !";
+
+                    // destroy thread.. and call complete
+                    clearInterval( threadMetadata.thread );
+                    threadMetadata.endDate = new Date();
+                    threadMetadata.thread = null;
+                    // wait, slightly, then notify for the oncomplete to take over
+                    setTimeout ( function() { progressBarWidget.onComplete() }, 1000 );
+                    return;
+                }
+
+            });
+        },  threadMetadata.intervalDuration ); // update fairly quickly
+
+
+        }
+
+        // start demo process
+        _progressUpdater( progressBarWidget );
+    }
+
+
+
+
+
+
+
+
+    // summary : Progress Ball 2
+    function startAuthenticationDemo2( context ) {
+        var progressBarWidget = dijit.byId( "progressBall2");
+        progressBarWidget.show();
+        context.attr("disabled", true);
+        context.focusNode.blur();
+
+        var threadMetadata = {
+            thread : null,
+            startDate : new Date().getTime(),
+            endDate : null,
+            intervalDuration : 500,
+            executionLifecycleDuration : 5 * 1000
+        };
+
+        function _getProgressReport(){ var deferred = new dojo.Deferred(); deferred.callback( threadMetadata );    return deferred; }
+
+        // callback to update the progress bar model / view
+        var _progressUpdater = function (bar) {
+
+            threadMetadata.thread = setInterval( function(){
+            var report = _getProgressReport();
+
+            report.addCallback(function(response) {
+
+                // bar.update( );
+                var timeNow = new Date().getTime();
+                // did execution complete ?
+                if( ( timeNow - threadMetadata.startDate ) >=  threadMetadata.executionLifecycleDuration  ) {
+
+                    // destroy thread.. and call complete
+                    clearInterval( threadMetadata.thread );
+                    threadMetadata.endDate = new Date();
+                    threadMetadata.thread = null;
+                    // wait, slightly, then notify for the oncomplete to take over
+                    setTimeout ( function() { progressBarWidget.onComplete() }, 500 );
+                    return;
+                }
+            });
+        },  threadMetadata.intervalDuration ); // update fairly quickly
+        }
+
+        // start demo process
+        _progressUpdater( progressBarWidget );
+    }
+
+
+
+    </script> 
+
+
+</head>
+
+<body class="kubrick tundra">
+
+    <h1>Progress Bar</h1>
+
+
+    <h3>
+        Simulated Progress bar updated dynamically - inside modal dialog
+    </h3>
+    <a id="dialog1button" href="javascript:startProgressBarDemo1()">Start Progress Bar &gt;</a>
+
+
+
+    <div dojoType="cues.dialog.DialogOverlay" id="dialog1" title="Please get actions..."
+    class="dijitProgressBarDialog"
+        width="520"
+        duration="10"
+        cancelButtonLabel="Cancel Task"
+        autoFocus="false"
+        aria-describedby="intro"
+        onfocus="console.log('user focus handler')"
+        onblur="console.log('user blur handler')"
+         >
+
+        <!-- progress indicator -->
+        <div class="dialogPaneContentBox dijitHidden">
+
+            <div dojoType="cues.ProgressIndicatorBar"
+                 style="width:500px;" maximum="100" id="setTestBar1" progress="5" 
+                 indeterminate="false"
+                isProgressValueShown="true"
+                title="Uploading and Processing" iconClass="ciscoLogo" footer="Please wait..." >
+
+
+
+            <script type="dojo/connect" event="onChange" >
+                  var v = this.getValue();
+                  // trigger the completion notification at this point
+                  if( v >= 100 ) {
+                      this.onComplete();
+                  }
+             </script>
+                        
+                  <script type="dojo/connect" event="onComplete" >
+                  var dialogWidget = dijit.getEnclosingWidget ( this.domNode.parentNode );
+                  console.log("notifying dialog to shutdown..", dialogWidget);
+
+                    // auto destroy 
+                    dialogWidget.hide();
+                    dialogWidget.destroyRecursive();
+
+                </script>
+
+        <script type="dojo/connect" event="onCancel" args="context">
+         console.log("notifying cancellation process from ", this );
+         </script>
+
+         <script type="dojo/connect" event="destroy">
+             // when the widget is destroyed.. also disable the trigger link
+             // change the link so it could never be reused
+             console.log('destroy')
+             dojo.style( "dialog1button", { color: "#888", textDecoration: "line-through" } );
+             dojo.byId( "dialog1button").setAttribute("href", "javascript:" );
+        </script>
+
+            <!-- /progress indicator -->
+            </div>
+
+        <!-- / dialogPaneContentBox -->
+        </div>
+
+
+            <script type="dojo/method" event="onCancelClickEvent" args="button">
+            button.focusNode.blur();
+            var progressBarWidget = this.getChildren()[0];
+            progressBarWidget.onCancel( this );
+    
+             // proceed to view/widget destruction
+            this.hide();
+            this.destroyRecursive();
+
+
+        </script>
+
+<!-- /dialog -->
+    </div>
+
+
+<!-- **************************************************  -->
+
+
+
+
+    <h3>
+        Simulated Indeterminate Progress bar, custom icon, updated dynamically - inside modal dialog, ( will terminate after 10 seconds )
+    </h3>
+    <a id="dialog2button" href="javascript:startProgressBarDemo2()">Start Progress Bar &gt;</a>
+
+
+
+    <div dojoType="cues.dialog.DialogOverlay" id="dialog2" 
+    class="dijitProgressBarDialog"
+        width="300"
+        duration="10"
+        cancelButtonLabel="Cancel"
+        autoFocus="false"
+        aria-describedby="intro"
+        onfocus="console.log('user focus handler')"
+        onblur="console.log('user blur handler')"
+         >
+
+        <!-- progress indicator -->
+        <div class="dialogPaneContentBox dijitHidden">
+
+            <div dojoType="cues.ProgressIndicatorBar"
+                 style="width:280px;"
+                 indeterminate="true"
+                isProgressValueShown="true"
+                iconClass="updateIcon"
+                title="Working on some tasks..." footer="Please wait..." >
+
+
+                  <script type="dojo/connect" event="onComplete" >
+                  var dialogWidget = dijit.getEnclosingWidget ( this.domNode.parentNode );
+                  console.log("notifying dialog to shutdown..", dialogWidget);
+
+                    // auto destroy 
+                    dialogWidget.hide();
+                    dialogWidget.destroyRecursive();
+
+                </script>
+
+        <script type="dojo/connect" event="onCancel" args="context">
+         console.log("notifying cancellation process from ", this );
+         </script>
+
+         <script type="dojo/connect" event="destroy">
+             // when the widget is destroyed.. also disable the trigger link
+             // change the link so it could never be reused
+             console.log('destroy')
+             dojo.style( "dialog2button", { color: "#888", textDecoration: "line-through" } );
+             dojo.byId( "dialog2button").setAttribute("href", "javascript:" );
+        </script>
+
+            <!-- /progress indicator -->
+            </div>
+
+        <!-- / dialogPaneContentBox -->
+        </div>
+
+
+            <script type="dojo/method" event="onCancelClickEvent" args="button">
+            button.focusNode.blur();
+            var progressBarWidget = this.getChildren()[0];
+            progressBarWidget.onCancel( this );
+    
+             // proceed to view/widget destruction
+            this.hide();
+            this.destroyRecursive();
+
+        </script>
+
+<!-- /dialog -->
+    </div>
+
+        <!-- Form -->
+        <div class="formInsideTabs" dojoType="cues.form.Form" autoLabelWidth="true" style="">
+        <div dojoType="cues.layout.GroupBox" style="width:400px;background-color:#eee;border:1px #bbb solid;" instructionText="Progress Ball animation effects" seperator="false">
+                  <div name="textboxone" maxLength="15" dojoType="cues.form.TextBox" label="User login:" fieldWidth="100px" required="true" dynamicHint="Simulates the server side progress of authentication">
+                  </div> 
+            <button style="margin-left:10px;" type="button" dojoType="dijit.form.Button" onclick='javascript:startAuthenticationDemo1(this);'>Log in</button>
+
+            <!-- progress ball animation -->
+            <div dojoType="cues.ProgressIndicatorBall" class="alignToButton" 
+            id="progressBall1" footer="Authenticating...">
+
+                <!-- when auth is complete -->
+              <script type="dojo/connect" event="onComplete" >
+              // hide that text description
+              dojo.byId("progressBall1_description").innerHTML = "(add code...)";
+                console.log("done with progress ball authentication demo");
+                this.hide();
+
+                </script>
+
+            <!-- progress ball animation -->
+            </div>
+
+                <span id="progressBall1_description_wrapper"> &lt;&lt; <span id="progressBall1_description">authenticate</span></span>
+
+
+        </div>
+        
+        </div>
+</body>
+</html>

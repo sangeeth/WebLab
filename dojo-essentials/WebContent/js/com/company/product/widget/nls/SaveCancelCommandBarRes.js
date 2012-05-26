@@ -1,0 +1,4 @@
+({
+	saveButtonLabel: "Save",
+	cancelButtonLabel: "Cancel"
+})

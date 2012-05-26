@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <style type="text/css">
+            @import url("/js/dojo/resources/dojo.css");
+            @import url("/js/dijit/themes/dijit.css");
+            @import url("/js/dijit/themes/tundra/tundra.css");
+            
+            @import url("/js/dojox/grid/resources/Grid.css");
+            @import url("/js/dojox/grid/resources/tundraGrid.css");  
+        </style>
+            
+        <script type="text/javascript">
+        var djConfig = {
+                parseOnLoad: true 
+        };
+        </script>
+        <script type="text/javascript" src="/js/dojo/dojo.js"></script>
+        
+        <script type="text/javascript">
+            dojo.require("dojox.grid.DataGrid");
+            dojo.require("dojo.data.ItemFileReadStore");
+            
+            var gridStructure = [
+                { 
+                    name: 'Name',
+                    field: 'name',
+                    width: 'auto'
+                 },
+                 { 
+                    name: 'Occupation',
+                    field: 'occupation',
+                    width: 'auto',
+                    formatter: function(item) {
+                                  return "<b>" + item + "</b>"; 
+                               }
+                  }
+            ];
+            
+            
+            dojo.addOnLoad(function(){
+                var peopleData = {
+                       "items": [
+                                 {id: 1, name: 'Gandhi', occupation: 'Politics'},
+                                 {id: 2, name: 'Dhoni', occupation: 'Cricket'},
+                                 {id: 3, name: 'Aamir', occupation: 'Actor'}
+                                ]
+                };
+                
+                var dataGridStore = new dojo.data.ItemFileReadStore({
+                                        data: peopleData  
+                                    });
+                
+                dijit.byId("peopleGrid").setStore(dataGridStore);
+                dijit.byId("peopleGrid").update();
+            });
+        </script>
+    </head>
+    
+    <body class="tundra">
+        <div jsid="dataGridStore" dojoType="dojo.data.ItemFileReadStore" data="{items: []}"></div>
+        <div id="peopleGrid" 
+             dojoType="dojox.grid.DataGrid"
+             style="height:200px;"
+             structure="gridStructure"
+             store="dataGridStore">
+        </div>
+    </body>
+</html>

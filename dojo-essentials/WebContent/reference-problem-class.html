@@ -1,0 +1,55 @@
+<html>
+
+<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojo/dojo.xd.js"></script>
+<script type="text/javascript">
+
+dojo.declare("Person", [], {
+    // public static
+    name : null,
+    
+    // public static
+    children : [],
+    
+    // public static
+    attributes : {},
+    
+    //
+    constructor : function(/*string*/ name) {
+                      this.name = name;
+                      this.children = [];
+                      this.attributes = {};
+                  },
+	// public
+    getName : function() {
+                  return this.name;
+              },
+             
+    setName : function(/*string*/ name) {
+                  this.name = name;
+              },
+              
+    addChild : function(/*string*/ name) {
+    			  this.children.push(name);
+    		  }
+});
+
+person1 = new Person("person1");
+person1.name = "person1";
+person1.attributes["person1-attribute1"] = "value1";
+person1.attributes["person1-attribute2"] = "value2";
+person1.addChild("person1-child1");
+
+person2 = new Person("person2");
+person2.name = "person2";
+person2.attributes["person2-attribute1"] = "value3";
+person2.attributes["person2-attribute2"] = "value4";
+person2.addChild("person2-child1");
+person2.addChild("person2-child2");
+
+console.log(person1);
+console.log(person2);
+</script>
+<body>
+</body>
+</html>
+

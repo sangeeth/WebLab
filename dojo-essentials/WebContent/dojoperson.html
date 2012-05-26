@@ -1,0 +1,26 @@
+<html>
+
+<script type="text/javascript">
+var djConfig = {
+        isDebug: false,
+        debugAtAllCosts: false,
+        parseOnLoad: true, 
+        baseUrl: '/js/dojo/',
+        modulePaths: { 'com' : '/dojo-essentials/js/com/' }
+};
+</script>
+<script type="text/javascript" src="/js/dojo/dojo.js"></script>
+<script type="text/javascript">
+dojo.require("com.company.product.Person");
+
+gandhi = new com.company.product.Person("Gandhi");
+console.log(gandhi.getName());
+
+netaji = new com.company.product.Person();
+netaji.name = "Netaji";
+console.log(netaji.name);
+console.log(netaji.getName());
+</script>
+<body>
+</body>
+</html>

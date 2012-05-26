@@ -1,0 +1,25 @@
+<html>
+<script type="text/javascript">
+function Person(/*string*/ name) {
+	   this.name = name;
+	   
+	   // Methods
+	   this.getName = function() {
+		   				return this.name;
+	   				  };
+	   this.setName = function(/*string*/ name) {
+		   				this.name = name;
+	   				  };
+}
+
+var gandhi = new Person("Gandhi");
+console.log(gandhi.getName());
+
+var netaji = new Person();
+netaji.name = "Netaji";
+console.log(netaji.name);
+console.log(netaji.getName());
+</script>
+<body>
+</body>
+</html>
