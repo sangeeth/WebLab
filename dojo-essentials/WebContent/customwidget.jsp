@@ -1,20 +1,21 @@
+<!DOCTYPE html>
 <html>
     <head>
         <style type="text/css">
-            @import url("/js/dojo/resources/dojo.css");
-            @import url("/js/dijit/themes/dijit.css");
-            @import url("/js/dijit/themes/tundra/tundra.css");
+            @import url("http://ajax.googleapis.com/ajax/libs/dojo/1.6.1/dojo/resources/dojo.css");
+            @import url("http://ajax.googleapis.com/ajax/libs/dojo/1.6.1/dijit/themes/dijit.css");
+            @import url("http://ajax.googleapis.com/ajax/libs/dojo/1.6.1/dijit/themes/tundra/tundra.css");
         </style>
         
 		<script type="text/javascript">
 		var djConfig = {
 		        parseOnLoad: true, 
 		        locale : 'en-us',
-		        baseUrl: '/js/dojo/', 
-		        modulePaths: { 'com' : '/js/com/' }
+		        baseUrl : '${pageContext.request.contextPath}/js/',
+		        modulePaths: { 'com' : 'com' }
 		};
 		</script>
-        <script type="text/javascript" src="/js/dojo/dojo.js">
+        <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6.1/dojo/dojo.xd.js"></script>
         </script>
         <script type="text/javascript">
             dojo.require("com.company.product.widget.SaveCancelCommandBar");
